@@ -8,15 +8,15 @@ A full-stack bus ticket booking and management system built with **Spring Boot**
 
 This project implements **7 core modules** as defined in the project requirements:
 
-| # | Module | Description | Key Files |
+| # | Module | Description | Key Components |
 |---|--------|-------------|-----------|
-| 1 | **User Authentication** | Login/Register with JWT tokens, role-based access (ADMIN/USER) | `AuthController`, `AuthService`, `JwtUtil`, `Login.tsx`, `Register.tsx` |
-| 2 | **Bus Search** | Search available buses by source city, destination city, and date | `ScheduleController.search()`, `SearchSchedules.tsx` |
-| 3 | **Seat Selection** | Interactive seat map with real-time availability, prevents double-booking | `SeatController`, `Booking.tsx` (visual seat grid) |
-| 4 | **Ticket Booking** | Confirm booking with mock payment, generates booking ID | `BookingService.createBooking()`, `Booking.tsx` |
-| 5 | **View Booking** | View all bookings with status, seats, amounts, dates | `BookingController.getMyBookings()`, `MyBookings.tsx` |
-| 6 | **Ticket Cancellation** | Cancel bookings and auto-release seats | `BookingController.cancelBooking()`, `MyBookings.tsx` |
-| 7 | **Database Management** | H2 file-based storage, JPA entities, data initialization | Entities: `User`, `Bus`, `Route`, `Schedule`, `Seat`, `Booking` |
+| 1 | **User Authentication Module** | • Allows users to log in using username and password<br>• Provides secure access to the system<br>• Prevents unauthorized usage | `AuthController`, `Login.tsx`, `Register.tsx`, `JwtAuthenticationFilter` |
+| 2 | **Bus Search Module** | • Allows users to search available buses<br>• Displays buses based on source and destination<br>• Shows bus details like fare and route | `ScheduleController`, `SearchSchedules.tsx` |
+| 3 | **Seat Selection Module** | • Displays available seats<br>• Allows users to select preferred seats<br>• Prevents double booking of seats | `SeatController`, `Booking.tsx` (Grid UI), Pessimistic Locking |
+| 4 | **Ticket Booking Module** | • Confirms ticket booking<br>• Generates booking ID<br>• Stores passenger and journey details | `BookingService`, `Booking.tsx` (Passenger Form) |
+| 5 | **View Booking Module** | • Displays all booking details<br>• Shows booking ID, passenger name, bus ID, and journey date | `BookingController.getMyBookings()`, `MyBookings.tsx` |
+| 6 | **Ticket Cancellation Module** | • Allows users to cancel booked tickets<br>• Updates booking records in the database | `BookingController.cancelBooking()`, auto-releases seats |
+| 7 | **Database Management Module** | • Stores user, bus, and booking information<br>• Maintains data consistency | PostgreSQL, `application.yml`, Spring Data JPA Repositories |
 
 ---
 
