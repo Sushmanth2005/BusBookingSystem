@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../lib/axios';
-import { Bookmark, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { Bookmark, Clock, CheckCircle2, XCircle, AlertCircle, Download } from 'lucide-react';
 
 interface Booking {
     id: number;
@@ -22,7 +22,7 @@ export default function MyBookings() {
         try {
             const response = await api.get('/bookings/my-bookings');
             setBookings(response.data);
-        } catch (err) {
+        } catch (_) {
             console.error('Failed to fetch bookings');
         } finally {
             setLoading(false);
@@ -38,8 +38,24 @@ export default function MyBookings() {
         try {
             await api.delete(`/bookings/${id}`);
             fetchBookings();
-        } catch (err) {
+        } catch (_) {
             alert('Failed to cancel booking');
+        }
+    };
+
+    const handleDownloadTicket = async (id: number) => {
+        try {
+            const response = await api.get(`/bookings/${id}/ticket`, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `BusEase-Ticket-${id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (_) {
+            alert('Failed to download ticket');
         }
     };
 
@@ -130,9 +146,18 @@ export default function MyBookings() {
                                         {!isCancelled && new Date(booking.departureTime) > new Date() && (
                                             <button
                                                 onClick={() => handleCancel(booking.id)}
-                                                className="mt-6 w-full text-center bg-white border-2 border-red-100 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors shadow-sm"
+                                                className="mt-4 w-full text-center bg-white border-2 border-red-100 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors shadow-sm"
                                             >
                                                 Cancel Ticket
+                                            </button>
+                                        )}
+
+                                        {!isCancelled && (
+                                            <button
+                                                onClick={() => handleDownloadTicket(booking.id)}
+                                                className="mt-3 w-full text-center bg-indigo-50 border-2 border-indigo-100 text-indigo-600 font-bold py-2.5 rounded-xl hover:bg-indigo-100 hover:border-indigo-200 transition-colors shadow-sm flex items-center justify-center gap-2"
+                                            >
+                                                <Download size={16} /> Download Ticket
                                             </button>
                                         )}
                                     </div>

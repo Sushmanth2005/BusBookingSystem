@@ -20,9 +20,12 @@ public class BookingResponse {
     private Long scheduleId;
     private String source;
     private String destination;
+    private String busName;
     private LocalDateTime departureTime;
     private List<String> seatNumbers;
     private BookingStatus status;
     private Double totalAmount;
     private LocalDateTime bookingDate;
+    private String passengerName;
+    private String passengerPhone;
 }

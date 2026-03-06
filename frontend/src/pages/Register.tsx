@@ -17,8 +17,9 @@ export default function Register() {
             await api.post('/auth/register', { name, email, password, role });
             alert('Registration successful! Please login.');
             navigate('/login');
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Registration failed.');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            setError(error.response?.data?.message || 'Registration failed.');
         }
     };
 

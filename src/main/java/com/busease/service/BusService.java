@@ -2,10 +2,16 @@ package com.busease.service;
 
 import com.busease.dto.BusRequest;
 import com.busease.dto.BusResponse;
+import com.busease.entity.Booking;
 import com.busease.entity.Bus;
+import com.busease.entity.Schedule;
 import com.busease.entity.Seat;
+import com.busease.enums.BookingStatus;
+import com.busease.repository.BookingRepository;
 import com.busease.repository.BusRepository;
+import com.busease.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +21,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BusService {
 
     private final BusRepository busRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final BookingRepository bookingRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public BusResponse addBus(BusRequest request) {
@@ -61,8 +71,6 @@ public class BusService {
 
         bus.setBusName(request.getBusName());
         bus.setType(request.getType());
-        // For simplicity in V1, we do not regenerate seats upon update if totalSeats changes.
-        // It requires complex logic to handle booked seats. We'll update the value only.
         bus.setTotalSeats(request.getTotalSeats());
 
         Bus updatedBus = busRepository.save(bus);
@@ -71,10 +79,45 @@ public class BusService {
 
     @Transactional
     public void deleteBus(Long id) {
-        if (!busRepository.existsById(id)) {
-            throw new RuntimeException("Bus not found with id: " + id);
+        Bus bus = busRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bus not found with id: " + id));
+
+        // Find all schedules for this bus
+        List<Schedule> schedules = scheduleRepository.findByBusId(id);
+
+        // For each schedule, cancel active bookings and notify users
+        for (Schedule schedule : schedules) {
+            List<Booking> activeBookings = bookingRepository.findByScheduleIdAndStatus(
+                    schedule.getId(), BookingStatus.CONFIRMED);
+
+            for (Booking booking : activeBookings) {
+                booking.setStatus(BookingStatus.CANCELLED);
+                bookingRepository.save(booking);
+
+                // Notify the user
+                String message = String.format(
+                    "Your booking #%06d (%s → %s on %s, Bus: %s) has been cancelled because the bus has been removed from service. A full refund will be processed.",
+                    booking.getId(),
+                    schedule.getRoute().getSource(),
+                    schedule.getRoute().getDestination(),
+                    schedule.getDepartureTime().toLocalDate(),
+                    bus.getBusName()
+                );
+                notificationService.createNotification(booking.getUser(), message, "BUS_CANCELLED");
+
+                log.info("Cancelled booking #{} and notified user {} due to bus removal",
+                        booking.getId(), booking.getUser().getEmail());
+            }
         }
-        busRepository.deleteById(id);
+
+        // Delete schedules first (due to FK constraints), then the bus
+        scheduleRepository.deleteAll(schedules);
+        busRepository.delete(bus);
+
+        log.info("Deleted bus '{}' (ID: {}), cancelled {} bookings across {} schedules",
+                bus.getBusName(), id,
+                schedules.stream().mapToLong(s -> bookingRepository.findByScheduleIdAndStatus(s.getId(), BookingStatus.CANCELLED).size()).sum(),
+                schedules.size());
     }
 
     private BusResponse mapToResponse(Bus bus) {

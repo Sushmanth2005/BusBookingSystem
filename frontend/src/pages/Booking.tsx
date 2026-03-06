@@ -28,6 +28,11 @@ export default function Booking() {
     const [loading, setLoading] = useState(true);
     const [bookingLoading, setBookingLoading] = useState(false);
 
+    // Passenger details
+    const [passengerName, setPassengerName] = useState('');
+    const [passengerPhone, setPassengerPhone] = useState('');
+    const [passengerEmail, setPassengerEmail] = useState('');
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -38,7 +43,7 @@ export default function Booking() {
                     const seatRes = await api.get(`/seats/bus/${schedRes.data.busId}`);
                     setSeats(seatRes.data);
                 }
-            } catch (err) {
+            } catch (_) {
                 console.error("Failed to load booking info");
             } finally {
                 setLoading(false);
@@ -57,16 +62,21 @@ export default function Booking() {
 
     const handleBook = async () => {
         if (selectedSeats.length === 0) return alert('Select at least one seat');
+        if (!passengerName.trim()) return alert('Please enter passenger name');
         setBookingLoading(true);
         try {
             await api.post('/bookings', {
                 scheduleId: Number(scheduleId),
-                seatNumbers: selectedSeats
+                seatNumbers: selectedSeats,
+                passengerName,
+                passengerPhone,
+                passengerEmail
             });
             // Navigate instantly
             navigate('/bookings');
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Booking failed. Seats might be taken.');
+        } catch (err: unknown) {
+            const error = err as { response?: { data?: { message?: string } } };
+            alert(error.response?.data?.message || 'Booking failed. Seats might be taken.');
             const seatRes = await api.get(`/seats/bus/${schedule?.busId}`);
             setSeats(seatRes.data);
             setSelectedSeats([]);
@@ -169,6 +179,17 @@ export default function Booking() {
 
                     <div className="bg-green-50 text-green-700 text-sm p-3 rounded-lg flex items-center gap-2 font-medium mb-6">
                         <ShieldCheck size={18} className="shrink-0" /> Automatic secure payment confirmation
+                    </div>
+
+                    {/* Passenger Details Form */}
+                    <div className="space-y-3 mb-6">
+                        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Passenger Details</h3>
+                        <input type="text" required placeholder="Passenger Name *" className="input-field text-sm"
+                            value={passengerName} onChange={e => setPassengerName(e.target.value)} />
+                        <input type="tel" placeholder="Phone Number" className="input-field text-sm"
+                            value={passengerPhone} onChange={e => setPassengerPhone(e.target.value)} />
+                        <input type="email" placeholder="Email (optional)" className="input-field text-sm"
+                            value={passengerEmail} onChange={e => setPassengerEmail(e.target.value)} />
                     </div>
 
                     <button

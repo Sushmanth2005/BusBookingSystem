@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../lib/axios';
 import { Search, Bus, Clock, MapPin, ArrowRight } from 'lucide-react';
+import { CITIES } from '../constants';
 
 interface Schedule {
     id: number;
@@ -14,19 +15,6 @@ interface Schedule {
     arrivalTime: string;
     price: number;
 }
-
-const CITIES = [
-    'Hyderabad',
-    'Vijayawada',
-    'Visakhapatnam',
-    'Chennai',
-    'Bangalore',
-    'Tirupati',
-    'Mumbai',
-    'Delhi',
-    'Pune',
-    'Kolkata',
-];
 
 export default function SearchSchedules() {
     const [source, setSource] = useState('Hyderabad');

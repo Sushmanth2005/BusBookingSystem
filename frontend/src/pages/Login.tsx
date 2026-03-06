@@ -17,7 +17,7 @@ export default function Login() {
             const response = await api.post('/auth/login', { email, password });
             login(response.data.token);
             navigate('/');
-        } catch (err) {
+        } catch (_) {
             setError('Invalid credentials. Please try again.');
         }
     };

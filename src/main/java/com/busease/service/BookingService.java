@@ -65,8 +65,11 @@ public class BookingService {
                 .schedule(schedule)
                 .seatNumbers(String.join(",", request.getSeatNumbers()))
                 .bookingDate(LocalDateTime.now())
-                .status(BookingStatus.CONFIRMED) // Represents mock payment success
+                .status(BookingStatus.CONFIRMED)
                 .totalAmount(totalAmount)
+                .passengerName(request.getPassengerName())
+                .passengerPhone(request.getPassengerPhone())
+                .passengerEmail(request.getPassengerEmail())
                 .build();
 
         Booking savedBooking = bookingRepository.save(booking);
@@ -79,6 +82,12 @@ public class BookingService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return bookingRepository.findByUserId(user.getId()).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<BookingResponse> getAllBookings() {
+        return bookingRepository.findAllByOrderByBookingDateDesc().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -118,11 +127,14 @@ public class BookingService {
                 .scheduleId(booking.getSchedule().getId())
                 .source(booking.getSchedule().getRoute().getSource())
                 .destination(booking.getSchedule().getRoute().getDestination())
+                .busName(booking.getSchedule().getBus().getBusName())
                 .departureTime(booking.getSchedule().getDepartureTime())
                 .seatNumbers(Arrays.asList(booking.getSeatNumbers().split(",")))
                 .status(booking.getStatus())
                 .totalAmount(booking.getTotalAmount())
                 .bookingDate(booking.getBookingDate())
+                .passengerName(booking.getPassengerName())
+                .passengerPhone(booking.getPassengerPhone())
                 .build();
     }
 }

@@ -25,4 +25,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("endOfDay") LocalDateTime endOfDay,
             @Param("now") LocalDateTime now
     );
+
+    List<Schedule> findByBusId(Long busId);
 }

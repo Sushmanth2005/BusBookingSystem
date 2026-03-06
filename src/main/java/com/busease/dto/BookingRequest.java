@@ -20,4 +20,9 @@ public class BookingRequest {
 
     @NotEmpty(message = "At least one seat must be selected")
     private List<String> seatNumbers;
+
+    // Passenger details
+    private String passengerName;
+    private String passengerPhone;
+    private String passengerEmail;
 }

@@ -38,4 +38,9 @@ public class Booking {
 
     @Column(nullable = false)
     private Double totalAmount;
+
+    // Passenger details
+    private String passengerName;
+    private String passengerPhone;
+    private String passengerEmail;
 }
