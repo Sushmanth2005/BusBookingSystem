@@ -36,11 +36,11 @@ const Navigation = () => {
 
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchUnread();
       const interval = setInterval(fetchUnread, 30000);
       return () => clearInterval(interval);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const openNotifications = async () => {

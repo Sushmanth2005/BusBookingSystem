@@ -31,34 +31,39 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() > 0) {
-            log.info("Database already contains data. Skipping initialization.");
+        log.info("Checking database for test data initialization...");
+
+        // ===== 1. CREATE USERS =====
+        if (userRepository.count() == 0) {
+            log.info("No users found. Creating test accounts...");
+            userRepository.save(User.builder()
+                    .name("Admin User")
+                    .email("admin@busease.com")
+                    .password(passwordEncoder.encode("admin123"))
+                    .role(Role.ADMIN)
+                    .build());
+
+            userRepository.save(User.builder()
+                    .name("Test User")
+                    .email("user@busease.com")
+                    .password(passwordEncoder.encode("user123"))
+                    .role(Role.USER)
+                    .build());
+
+            userRepository.save(User.builder()
+                    .name("Ravi Kumar")
+                    .email("ravi@busease.com")
+                    .password(passwordEncoder.encode("ravi123"))
+                    .role(Role.USER)
+                    .build());
+        }
+
+        if (busService.getAllBuses().size() >= 30) {
+            log.info("Database already contains the 30 test buses. Skipping bus/schedule initialization.");
             return;
         }
 
-        log.info("Database is empty. Initializing test data...");
-
-        // ===== 1. CREATE USERS =====
-        userRepository.save(User.builder()
-                .name("Admin User")
-                .email("admin@busease.com")
-                .password(passwordEncoder.encode("admin123"))
-                .role(Role.ADMIN)
-                .build());
-
-        userRepository.save(User.builder()
-                .name("Test User")
-                .email("user@busease.com")
-                .password(passwordEncoder.encode("user123"))
-                .role(Role.USER)
-                .build());
-
-        userRepository.save(User.builder()
-                .name("Ravi Kumar")
-                .email("ravi@busease.com")
-                .password(passwordEncoder.encode("ravi123"))
-                .role(Role.USER)
-                .build());
+        log.info("Adding 30 test buses, routes, and schedules...");
 
         // ===== 2. CREATE BUSES (30 buses) =====
         // AC Sleeper (premium, 40 seats)

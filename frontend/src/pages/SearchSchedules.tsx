@@ -40,7 +40,7 @@ export default function SearchSchedules() {
         try {
             const response = await api.get(`/schedules/search?source=${source}&destination=${destination}&date=${date}`);
             setSchedules(response.data);
-        } catch (err) {
+        } catch (_) {
             setError('Failed to fetch schedules.');
         } finally {
             setLoading(false);
