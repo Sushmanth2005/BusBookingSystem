@@ -41,7 +41,9 @@ export default function Booking() {
 
                 if (schedRes.data) {
                     const seatRes = await api.get(`/seats/bus/${schedRes.data.busId}`);
-                    setSeats(seatRes.data);
+                    // Sort seats by ID so the layout remains stable even if a seat is booked and updated late in the DB
+                    const sortedSeats = (seatRes.data as Seat[]).sort((a, b) => a.id - b.id);
+                    setSeats(sortedSeats);
                 }
             } catch (_) {
                 console.error("Failed to load booking info");
@@ -78,7 +80,8 @@ export default function Booking() {
             const error = err as { response?: { data?: { message?: string } } };
             alert(error.response?.data?.message || 'Booking failed. Seats might be taken.');
             const seatRes = await api.get(`/seats/bus/${schedule?.busId}`);
-            setSeats(seatRes.data);
+            const sortedSeats = (seatRes.data as Seat[]).sort((a, b) => a.id - b.id);
+            setSeats(sortedSeats);
             setSelectedSeats([]);
         } finally {
             setBookingLoading(false);
