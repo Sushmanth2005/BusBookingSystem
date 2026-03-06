@@ -7,14 +7,13 @@ export default function Register() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('USER');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await api.post('/auth/register', { name, email, password, role });
+            await api.post('/auth/register', { name, email, password });
             alert('Registration successful! Please login.');
             navigate('/login');
         } catch (err: unknown) {
@@ -61,16 +60,6 @@ export default function Register() {
                             className="input-field"
                             value={password} onChange={e => setPassword(e.target.value)}
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">Role (For Demo)</label>
-                        <select
-                            className="input-field bg-white"
-                            value={role} onChange={e => setRole(e.target.value)}
-                        >
-                            <option value="USER">Regular User</option>
-                            <option value="ADMIN">Administrator</option>
-                        </select>
                     </div>
                     <div className="pt-4">
                         <button type="submit" className="btn-primary w-full">Register Account</button>

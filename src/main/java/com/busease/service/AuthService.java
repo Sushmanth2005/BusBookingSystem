@@ -25,20 +25,12 @@ public class AuthService {
             throw new RuntimeException("Email already registered: " + request.getEmail());
         }
 
-        // Map role string to enum
-        Role role;
-        try {
-            role = Role.valueOf(request.getRole().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            role = Role.USER;
-        }
-
-        // Build and save user
+        // Always register as USER — admin accounts are created via backend only
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(role)
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
