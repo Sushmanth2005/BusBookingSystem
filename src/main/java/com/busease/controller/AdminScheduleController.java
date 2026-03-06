@@ -20,31 +20,31 @@ public class AdminScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request) {
         return new ResponseEntity<>(scheduleService.addSchedule(request), HttpStatus.CREATED);
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
         return ResponseEntity.ok(scheduleService.getAllSchedules());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ScheduleResponse> getScheduleById(@PathVariable Long id) {
         return ResponseEntity.ok(scheduleService.getScheduleById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ScheduleResponse> updateSchedule(@PathVariable Long id, @RequestBody @Valid ScheduleRequest request) {
         return ResponseEntity.ok(scheduleService.updateSchedule(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSchedule(@PathVariable Long id) {
         scheduleService.deleteSchedule(id);
         return ResponseEntity.noContent().build();

@@ -20,31 +20,31 @@ public class AdminBusController {
     private final BusService busService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BusResponse> addBus(@RequestBody @Valid BusRequest request) {
         return new ResponseEntity<>(busService.addBus(request), HttpStatus.CREATED);
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BusResponse>> getAllBuses() {
         return ResponseEntity.ok(busService.getAllBuses());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BusResponse> getBusById(@PathVariable Long id) {
         return ResponseEntity.ok(busService.getBusById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BusResponse> updateBus(@PathVariable Long id, @RequestBody @Valid BusRequest request) {
         return ResponseEntity.ok(busService.updateBus(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteBus(@PathVariable Long id) {
         busService.deleteBus(id);
         return ResponseEntity.noContent().build();

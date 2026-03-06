@@ -22,25 +22,25 @@ public class AdminAnalyticsController {
     private final BookingService bookingService;
 
     @GetMapping("/summary")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getSummary() {
         return ResponseEntity.ok(analyticsService.getSummary());
     }
 
     @GetMapping("/bookings-by-route")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Map<String, Object>>> getBookingsByRoute() {
         return ResponseEntity.ok(analyticsService.getBookingsByRoute());
     }
 
     @GetMapping("/revenue-by-day")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Map<String, Object>>> getRevenueByDay() {
         return ResponseEntity.ok(analyticsService.getRevenueByDay());
     }
 
     @GetMapping("/bookings-all")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }

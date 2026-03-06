@@ -16,6 +16,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import org.springframework.core.env.Environment;
+
 import java.time.LocalDateTime;
 
 @Component
@@ -28,6 +30,7 @@ public class DataInitializer implements CommandLineRunner {
     private final BusService busService;
     private final RouteService routeService;
     private final ScheduleService scheduleService;
+    private final Environment env;
 
     @Override
     public void run(String... args) throws Exception {
@@ -56,6 +59,14 @@ public class DataInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("ravi123"))
                     .role(Role.USER)
                     .build());
+        }
+
+        String dbUrl = env.getProperty("spring.datasource.url");
+        boolean isH2 = dbUrl != null && dbUrl.contains("h2");
+
+        if (!isH2) {
+            log.info("Non-H2 database detected. Skipping 30-bus test data initialization.");
+            return;
         }
 
         if (busService.getAllBuses().size() >= 30) {
